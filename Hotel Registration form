@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel Registration Form</title>
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="./node_modules/bootstrap-icons/font/bootstrap-icons.css">
+  <style>
+    body{
+      /* background-color: rgb(252, 128, 128); */
+      background-image: url("./public/joker.jpg");
+    }
+  </style>
+  <script>
+    function OrderClick() {
+    let name = document.getElementById("txtName").value.trim();
+    let date = document.getElementById("txtDate").value.trim();
+    let days = document.getElementById("txtDays").value.trim();
+    let advanceAmount = document.getElementById("txtAmount").value.trim();
+    let persions = document.getElementById("txtPersions").value.trim();
+    if (!name || !date || !days || !persions) {
+        alert("Please enter your Name , Date! , Days and Persions");
+        return;
+    }
+    let DeluxRadio = document.getElementById("optDelux");
+    let SuiteRadio = document.getElementById("optSuite");
+    let acCheckbox = document.getElementById("optac");
+    let lockerCheckbox = document.getElementById("optlocker");
+    let poolCheckbox = document.getElementById("optpool");
+    let balkoniCheckbox = document.getElementById("optbalkoni");
+ 
+
+    let qtyDelux = parseInt(document.getElementById("qtyDelux").value) || 1;
+    let qtySuite = parseInt(document.getElementById("qtySuite").value) || 1;
+    let qtyac = parseInt(document.getElementById("qtyac").value) || 0;
+    let qtylocker = parseInt(document.getElementById("qtylocker").value) || 0;
+    let qtypool = parseInt(document.getElementById("qtypool").value) || 0;
+    let qtybalkoni = parseInt(document.getElementById("qtybalkoni").value) || 0;
+
+    let mealName = "";
+    let mealQty = 1;
+    let mealCost = 0;
+    let adonName = [];
+    let statusName=[];
+
+    if (DeluxRadio.checked) {
+        mealName = DeluxRadio.value;
+        mealQty = qtyDelux;
+        mealCost = 2500 * mealQty;
+    }
+    if (SuiteRadio.checked) {
+        mealName = SuiteRadio.value;
+        mealQty = qtySuite;
+        mealCost = 4000 * mealQty;
+    }
+    if (!mealName) {
+        alert("Please select a Room!");
+        return;
+    }
+    if (acCheckbox.checked) {
+        adonName.push(`${acCheckbox.value} (x${qtyac})`);
+        mealCost += 1000 * qtyac;
+    }
+    if (lockerCheckbox.checked) {
+        adonName.push(`${lockerCheckbox.value} (x${qtylocker})`);
+        mealCost += 300 * qtylocker;
+    }
+    if (poolCheckbox.checked) {
+        statusName.push(`${poolCheckbox.value} (x${qtypool})`);
+        mealCost += 500 * qtypool;
+    }
+    if (balkoniCheckbox.checked) {
+        statusName.push(`${balkoniCheckbox.value} (x${qtybalkoni})`);
+        mealCost += 400 * qtybalkoni;
+    }
+    
+    // Store order details for repeat order
+    lastOrder = {
+        name: name,
+        date: date,
+        days: days,
+        advanceAmount: advanceAmount,
+        persions:persions,
+        meal: mealName,
+        mealQty: mealQty,
+        addons: adonName,
+        status:statusName,
+        qtyac: qtyac,
+        qtylocker: qtylocker,
+        qtypool:qtypool,
+        qtybalkoni:qtybalkoni
+    };
+    document.getElementById("lblName").innerHTML = name;
+    document.getElementById("lblDate").innerHTML = date;
+    document.getElementById("lblDays").innerHTML = days;
+    document.getElementById("lblAdvance").innerHTML = advanceAmount;
+    document.getElementById("lblPersions").innerHTML = persions;
+    document.getElementById("lblMeal").innerHTML = `${mealName} (x${mealQty})`;
+    document.getElementById("lblAdon").innerHTML = adonName.length ? adonName.join(", ") : "None";
+    document.getElementById("lblStatus").innerHTML = statusName.length ? statusName.join(", ") : "None";
+   // let advanceAmount = advanceAmount;  // Fixed advance amount
+let finalAmount = mealCost * days - advanceAmount;
+
+document.getElementById("lblAdvance").innerHTML = "&#8377; " + advanceAmount;
+document.getElementById("lblAmount").innerHTML = "&#8377; " + (finalAmount > 0 ? finalAmount : 0);
+}
+function RepeatOrder() {
+    if (!lastOrder.name) {
+        alert("No previous order found!");
+        return;
+    }
+    // Restore customer details
+    document.getElementById("txtName").value = lastOrder.name;
+    document.getElementById("txtDate").value = lastOrder.date;
+    document.getElementById("txtDays").value = lastOrder.days;
+    document.getElementById("txtPersiions").value = lastOrder.persions;
+    document.getElementById("txtAmount").value = lastOrder.persions;
+
+    // Restore meal selection
+    document.getElementById("optDelux").checked = lastOrder.meal === "Delux";
+    document.getElementById("optSuite").checked = lastOrder.meal === "Suite";
+
+    document.getElementById("qtyDelux").value = lastOrder.meal === "Delux" ? lastOrder.mealQty : 1;
+    document.getElementById("qtySuite").value = lastOrder.meal === "Suite" ? lastOrder.mealQty : 1;
+
+    // Restore add-ons selection and quantity
+    document.getElementById("optac").checked = lastOrder.qtyac > 0;
+    document.getElementById("optlocker").checked = lastOrder.qtylocker > 0;
+
+    document.getElementById("qtyac").value = lastOrder.qtyac || 1;
+    document.getElementById("qtylocker").value = lastOrder.qtylocker || 1;
+      
+    // Restore status selection and quantity
+
+    document.getElementById("optpool").checked = lastOrder.qtypool > 0;
+    document.getElementById("optbalkoni").checked = lastOrder.qtybalkoni > 0;
+
+    document.getElementById("qtypool").value = lastOrder.qtypool || 1;
+    document.getElementById("qtybalkoni").value = lastOrder.qtybalkoni || 1;
+
+    // Auto-update order details
+    OrderClick();
+}
+  </script>
+</head>
+<body>
+  <header>
+    <img src="./public/bar.jpg" alt="" width="100%" height="160px">
+    <div class="accordion-header">
+      <button class=" w-100" data-bs-toggle="collapse" data-bs-target="#customer">
+          <h3>Hotel Registration Form</h3>
+      </button>
+     </div>
+      </header>
+      <section>
+        <div>
+          <div class="accordion" id="BarOrder">
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <button class="btn btn-dark w-100" data-bs-toggle="collapse" data-bs-target="#customer">
+                        <h3>Customer Info</h3>
+                    </button>
+                </div>
+                <div id="customer" class="accordion-body accordion-collapse collapse show"data-bs-parent="#BarOrder">
+                  <dl>
+                    <dt>Customer Name</dt>
+                    <dd><input type="text" id="txtName" class="form-control" placeholder="text"></dd>
+                    <dt>Cheking Date</dt>
+                    <dd><input type="text" id="txtDate" class="form-control" placeholder="date"></dd>
+                    <dt>Total No of Days</dt>
+                    <dd><input type="text" id="txtDays" class="form-control" placeholder="Number"></dd>
+                    <dt>Mobile</dt>
+                    <dd><input type="text" id="txtPersions" class="form-control" placeholder="Number"></dd>                    
+                  </dl>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <button class="btn btn-dark w-100" data-bs-toggle="collapse" data-bs-target="#meal">
+                        <h3>Select Room Type</h3>
+                    </button>
+                </div>
+                <div id="meal" class="accordion-body accordion-collapse collapse show" data-bs-parent="#BarOrder">
+                  <div class="row">
+                    <div class="col text-center">
+                      <img src="./public/Delux.jpg" alt="" height="200px" width="200px">
+                      <div>
+                        <input type="radio" id="optDelux" value="Delux(2500)" name="meal" class="form-check-input">Delux Room.[&#8377;2500/-]
+                        <input type="number" id="qtyDelux" min="1" value="1" class="form-control mt-2" style="width: 80px;">
+                      </div>
+                    </div>
+                    <div class="col text-center">
+                      <img src="./public/Suite.jpg" alt="" height="200px" width="200px">
+                      <div>
+                        <input type="radio" id="optSuite" value="Suite(4000)" name="meal" class="form-check-input">Suite Room.[&#8377;4000/-]
+                        <input type="number" id="qtySuite" min="1" value="1" class="form-control mt-2" style="width: 80px;">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <button class="btn btn-dark w-100" data-bs-toggle="collapse" data-bs-target="#adon">
+                        <h3>Select Ameneties</h3>
+                    </button>
+                </div>
+                <div id="adon" class="accordion-body accordion-collapse collapse show" data-bs-parent="#BarOrder">
+                  <div class="row">
+                    <div class="col text-center">
+                      <img src="./public/ac.jpg" alt="" height="200px" width="200px">
+                      <div>
+                        <input type="checkbox" id="optac" value="A/C(1000)" class="form-check-input">A/C [&#8377;1000/-]
+                        <input type="number" id="qtyac" min="1" value="1" class="form-control mt-2" style="width: 80px;">
+                      </div>
+                    </div>
+                    <div class="col">
+                      <img src="./public/locker.jpg" alt="" height="200px" width="200px">
+                      <div>
+                        <input type="checkbox" id="optlocker" value="Locker(300)" class="form-check-input">Locker [&#8377;300/-]
+                        <input type="number" id="qtylocker" min="1" value="1" class="form-control mt-2" style="width: 80px;">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-header">
+                  <button class="btn btn-dark w-100" data-bs-toggle="collapse" data-bs-target="#status">
+                      <h3>Selects Comfert</h3>
+                  </button>
+                </div>
+
+                <div id="status" class="accordion-body accordion-collapse collapse show" data-bs-parent="#BarOrder">
+                  <div class="row">
+                    <div class="col text-center">
+                      <img src="./public/pool.jpg" alt="" height="200px" width="200px">
+                      <div>
+                        <input type="checkbox" id="optpool" value="Pool(500)" class="form-check-input">Swimming-Pool [&#8377;500/-]
+                        <input type="number" id="qtypool" min="1" value="1" class="form-control mt-2" style="width: 80px;">
+                      </div>
+                    </div>
+                    <div class="col">
+                      <img src="./public/balkoni.jpg" alt="" height="200px" width="200px">
+                      <div>
+                        <input type="checkbox" id="optbalkoni" value="Balkoni(400)" class="form-check-input">Balconi [&#8377;400/-]
+                        <input type="number" id="qtybalkoni" min="1" value="1" class="form-control mt-2" style="width: 80px;">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <button class="btn btn-dark w-100" data-bs-toggle="collapse" data-bs-target="#customer">
+                    <h3 align="center">Advance Amount</h3>
+                </button>
+                <dl id="customer" class="accordion-body accordion-collapse collapse show"data-bs-parent="#BarOrder">
+                  <dt>Advance Amount</dt>
+                  <dd><input type="text" id="txtAmount" class="form-control"></dd>
+                </dl>
+                </div>
+               
+                
+                <div class="row">
+                  <div class="col text-center">
+                    <button onclick="OrderClick()" data-bs-target="#billsummary" data-bs-toggle="modal" class="btn btn-dark w-30"><h3>Register</h3></button>
+                  </div>
+                  <div class="modal fade" id="billsummary">
+                    <div class="modal-dialog">
+                     <div class="modal-content">
+                       <div class="modal-header">
+                        <h3>Your Bill Summery</h3>
+                        <button class="btn-close" data-bs-dismiss="modal"></button>
+                       </div>
+                       <div class="modal-body">
+                        <dl>
+                          <button>
+                            <dt class="col-3">Customer Name :</dt>
+                            <dd class="col-12" id="lblName"></dd>
+                            <dt class="col-3">Cheking Date :</dt>
+                            <dd class="col-12" id="lblDate"></dd> 
+                            <dt class="col-3">Total no of Days :</dt>
+                            <dd class="col-12" id="lblDays"></dd>
+                            <dt class="col-3">Mobile :</dt>
+                            <dd class="col-12" id="lblPersions"></dd> 
+                            <dt class="col-3">Room Type :</dt>
+                            <dd class="col-12" id="lblMeal"></dd> 
+                            <dt class="col-3">Ameneties :</dt>
+                            <dd class="col-12" id="lblAdon"></dd>
+                            <dt class="col-3">Comfert :</dt>
+                            <dd class="col-12" id="lblStatus"></dd>
+                            <dt class="col-3">Advance Amount :</dt>
+                            <dd class="col-12" id="lblAdvance"></dd>
+                            <dt class="col-3">Total Amount (*days):</dt>
+                            <dd class="col-12" id="lblAmount"></dd>
+                          </button>
+                          <img src="./public/barcode.jpg" alt="" height="150px" width="150px">
+                        </dl>
+                       </div>
+                       <button style="background-color: gold;color: black;font-style:italic ;" data-bs-dismiss="modal"><h2><b>Thank You For Coming</b></h2></button>
+                       <div class=" modal-footer">
+                        <button class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                        <button class="btn btn-warning" onclick="RepeatOrder()">Repeat Order</button>
+                       </div>
+                     </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+        </div>
+      </section>
+      <script src="./node_modules/jquery/dist/jquery.js"></script>
+      <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+</body>
+</html>
